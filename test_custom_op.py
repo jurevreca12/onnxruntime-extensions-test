@@ -4,10 +4,9 @@ import onnxruntime as ort
 from onnxruntime_extensions import onnx_op, PyCustomOpDef, get_library_path
 import numpy as np
 
-DOMAIN="ai.onnx.contrib"
-#DOMAIN="qonnx.ops"
+DOMAIN="my.custom.domain"
 
-@onnx_op(op_type="CustomOpOne",
+@onnx_op(op_type=f"{DOMAIN}::CustomOpOne",
          inputs=[PyCustomOpDef.dt_float, PyCustomOpDef.dt_float])
 def custom_one_op(x, y):
     return np.add(x, y)
