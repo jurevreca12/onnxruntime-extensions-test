@@ -7,20 +7,23 @@ import numpy as np
 DOMAIN="my.custom.domain"
 
 @onnx_op(op_type=f"{DOMAIN}::CustomOpOne",
-         inputs=[PyCustomOpDef.dt_float, PyCustomOpDef.dt_float])
-def custom_one_op(x, y):
-    return np.add(x, y)
+         inputs=[PyCustomOpDef.dt_float, PyCustomOpDef.dt_float],
+         attrs={"float_attr": PyCustomOpDef.dt_float})
+def custom_one_op(x, y, **kwargs):
+    return np.add(x, y) + kwargs["float_attr"]
 
 def make_model():
     nodes = []
+    float_attr = helper.make_attribute("float_attr", np.array([1.2]))
     nodes.append(
         helper.make_node(
             'CustomOpOne', 
             ['input_1', 'input_2'], 
             ['output'],
-            domain=DOMAIN
+            domain=DOMAIN,
         )
     )
+    nodes[0].attribute.append(float_attr)
     input_1 = helper.make_tensor_value_info(
         'input_1', onnx_proto.TensorProto.FLOAT, [3,]
     )
